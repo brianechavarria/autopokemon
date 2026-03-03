@@ -38,6 +38,7 @@ class Pokemon:
         self.status = 0 #TODO
         self.flash_fire = False
         self.held_item = "" #TODO
+        self.effect = None #TODO implement effects such as lucky chant
         self.ability = self.ability_builder(pokemon_data, ability)
         self.type1 = pokemon_data["types"][0]["type"]["name"]
         if len(pokemon_data["types"]) > 1:

@@ -88,9 +88,41 @@ class Battle:
         else:
             flash_fire_effect = 1
         
+        #check for critical
+        #TODO implement stage effects and stat changes
+        critical_check = self.critical_calc(attack_move, attacker, defender)
+        if critical_check:
+            screen = 1
+            if attacker.ability == "sniper":
+                critical = 3
+            else:
+                critical = 2
+        else:
+            critical = 1
 
+        if attacker.item == "life orb":
+            item_effect = 1.3
+        elif attacker.item == "metronome":
+            n = self.metronome_check()
+            item_effect = 1 + n/10
+        else:
+            item_effect = 1
 
         
-        return ((((2*level)/5)*attack_move.power*(a/d)/50)*burn*screen*targets*weather_effect*flash_fire_effect+2)
+        return ((((2*level)/5)*attack_move.power*(a/d)/50)*burn*screen*targets*weather_effect*flash_fire_effect+2)*critical*item_effect
     
-        
+
+    #TODO critical calculator that will output either True or False.
+    def critical_calc(self, move, attacker, defender):
+        if (move.name == "future sight") or (move.name == "doom desire"):
+            return False
+        if (defender.ability == "battle armor") or (defender.ability == "shell armor"):
+            return False
+        if defender.effect == "lucky chant":
+            return False
+        return False
+    
+
+    #TODO helper function that will determine what n is when metronome is a held item
+    def metronome_check(self):
+        return 1
