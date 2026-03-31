@@ -1,4 +1,5 @@
 from pokemon import *
+import random
 
 class Battle:
 
@@ -108,8 +109,29 @@ class Battle:
         else:
             item_effect = 1
 
+        #TODO implement me first move functionality
+        me_first = 1
+
+        #implement random factor
+        if attack_move.name == "spit up":
+            random_factor = 1
+        else:
+            random_factor = random.randint(85,100)/100
+
+        #calculate STAB factor
+        if attack_move.move_type == attacker.type1 or attack_move.move_type == attacker.type2:
+            if attacker.ability.name == "adaptability":
+                stab = 2
+            else:
+                stab = 1.5
+        else:
+            stab = 1
+
         
-        return ((((2*level)/5)*attack_move.power*(a/d)/50)*burn*screen*targets*weather_effect*flash_fire_effect+2)*critical*item_effect
+
+
+        
+        return ((((2*level)/5)*attack_move.power*(a/d)/50)*burn*screen*targets*weather_effect*flash_fire_effect+2)*critical*item_effect*me_first*random_factor*stab
     
 
     #TODO critical calculator that will output either True or False.

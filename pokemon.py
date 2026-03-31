@@ -75,7 +75,7 @@ class Pokemon:
         return move_objects
     
     @staticmethod
-    #input the name of the ability from reading the pokemon information #REDO
+    #input the name of the ability from reading the pokemon information #TODO reimplement
     def ability_builder(data, slot):
         for a in data["abilities"]:
             if a["slot"] == slot+1:
