@@ -1,9 +1,9 @@
 from database import *
+from gen4_data import NATURE_MODIFIERS
 
 #Pokemon class, move class
 
 class Pokemon:
-    #status and level are TODO
     def __init__(self, species, moves, item, nature, ability, level, hp, stats, evs, ivs, friendship, exp):
         #lowkey kind of gross but there's a lot of paramaters that we have to keep in mind
         pokemon_data = read_pokemon(species)
@@ -34,21 +34,42 @@ class Pokemon:
         self.iv_spd = ivs[5]
         self.friendship = friendship
         self.exp = exp
-        self.level = 1 #TODO
-        self.status = 0 #TODO
+        self.status = None
         self.flash_fire = False
-        self.held_item = "" #TODO
-        self.effect = None #TODO implement effects such as lucky chant
+        self.focus_energy = False
+        self.trick_room = False  # True when Trick Room is active on the field
+        self.stat_stages = {
+            "attack": 0, "defense": 0, "speed": 0,
+            "spattack": 0, "spdefense": 0,
+            "accuracy": 0, "evasion": 0,
+        }
+        self.effect = None  # field effects targeting this Pokemon (e.g. "lucky chant")
         self.ability = self.ability_builder(pokemon_data, ability)
         self.type1 = pokemon_data["types"][0]["type"]["name"]
         if len(pokemon_data["types"]) > 1:
             self.type2 = pokemon_data["types"][1]["type"]["name"]
         else:
             self.type2 = ""
+        self._apply_nature()
         
 
 
-    #TODO   
+    def _apply_nature(self):
+        mod = NATURE_MODIFIERS.get(self.nature, {})
+        if "boost" in mod:
+            setattr(self, mod["boost"], int(getattr(self, mod["boost"]) * 1.1))
+            setattr(self, mod["reduce"], int(getattr(self, mod["reduce"]) * 0.9))
+
+    @staticmethod
+    def get_stage_modifier(stage: int) -> float:
+        """Return the Gen 4 stat multiplier for a given stage (-6 to +6)."""
+        stage = max(-6, min(6, stage))
+        if stage >= 0:
+            return (2 + stage) / 2
+        else:
+            return 2 / (2 - stage)
+
+    #TODO
     def how_close_to_evolve(self):
 
         if self.exp == 1:
@@ -67,7 +88,7 @@ class Pokemon:
             move_pp = m["pp"]
             move_priority = m["priority"]
             move_damage_class = m["damage_class"]["name"]
-            move_type = m["type"]
+            move_type = m["type"]["name"]
             move_stat_changes = m["stat_changes"]
             move_target = m["target"]["name"]
             move_objects.append(Move(move_name, move_power, move_accuracy, move_effect_chance, move_pp, move_priority, move_damage_class, move_type, move_stat_changes, move_target))
